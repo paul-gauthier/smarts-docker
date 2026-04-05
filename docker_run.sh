@@ -6,6 +6,7 @@ PLATFORM="${PLATFORM:-linux/amd64}"
 
 docker_args=(
   --rm
+  --ulimit core=0
   --platform "$PLATFORM"
   --user "$(id -u):$(id -g)"
   -v "$PWD:/work"
