@@ -18,12 +18,23 @@ RUN dpkg --add-architecture i386 \
         tcsh \
     && rm -rf /var/lib/apt/lists/*
 
+RUN LIBG2C_DEB="$(curl -fsSL http://old-releases.ubuntu.com/ubuntu/pool/universe/g/gcc-3.4/ | grep -oE 'libg2c0_[^"]+_i386\.deb' | sort -uV | tail -n 1)" \
+    && [ -n "$LIBG2C_DEB" ] \
+    && curl -fsSL "http://old-releases.ubuntu.com/ubuntu/pool/universe/g/gcc-3.4/${LIBG2C_DEB}" -o /tmp/libg2c0_i386.deb \
+    && mkdir -p /tmp/libg2c-extract /usr/lib/i386-linux-gnu \
+    && dpkg-deb -x /tmp/libg2c0_i386.deb /tmp/libg2c-extract \
+    && cp -av /tmp/libg2c-extract/usr/lib/libg2c.so.0* /usr/lib/i386-linux-gnu/ \
+    && ldconfig \
+    && rm -rf /tmp/libg2c0_i386.deb /tmp/libg2c-extract
+
 RUN curl -fsSL "https://www.nrel.gov/media/docs/libraries/grid/smarts-295-linux-tar.gz" -o /tmp/smarts-295-linux-tar.gz \
     && mkdir -p /opt \
     && tar -xzf /tmp/smarts-295-linux-tar.gz -C /opt \
     && sed -i 's/\r$//' "$SMARTS_HOME/smarts295bat" \
     && chmod +x "$SMARTS_HOME/smarts295" "$SMARTS_HOME/smarts295bat" \
-    && rm -f /tmp/smarts-295-linux-tar.gz
+    && ldd "$SMARTS_HOME/smarts295" | tee /tmp/smarts295.ldd \
+    && ! grep -q "not found" /tmp/smarts295.ldd \
+    && rm -f /tmp/smarts-295-linux-tar.gz /tmp/smarts295.ldd
 
 
 WORKDIR /work
