@@ -1,4 +1,4 @@
-# Simple Model of the Atmospheric Radiative Transfer of Sunshine (SMARTS) Docker wrapper
+# Docker wrapper for Simple Model of the Atmospheric Radiative Transfer of Sunshine (SMARTS)
 
 This repository builds a Docker image for the licensed Linux SMARTS 2.9.5 distribution and provides a small wrapper script you can use in place of `smarts295bat`.
 
