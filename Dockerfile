@@ -5,11 +5,15 @@ ENV SMARTS_HOME=/opt/SMARTS_295_Linux
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update \
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         bash \
         ca-certificates \
         curl \
+        libc6:i386 \
+        libgcc-s1:i386 \
+        libstdc++6:i386 \
         tar \
         tcsh \
     && rm -rf /var/lib/apt/lists/*
@@ -42,7 +46,7 @@ trap cleanup EXIT
 if [ -d /work ]; then
   (
     cd /work
-    find . -mindepth 1 -print | LC_ALL=C sort
+    find . -mindepth 1 \( -path './.git' -o -path './.git/*' \) -prune -o -print | LC_ALL=C sort
   ) >"$work_manifest"
 else
   : >"$work_manifest"
@@ -51,14 +55,27 @@ fi
 cp -a "$SMARTS_HOME"/. "$run_dir"/
 
 if [ -d /work ]; then
-  cp -a /work/. "$run_dir"/
+  (
+    cd /work
+    tar --exclude=.git -cf - .
+  ) | (
+    cd "$run_dir"
+    tar -xf -
+  )
 fi
 
 should_copy_back() {
   local rel="$1"
 
+  if [[ "$rel" == .git || "$rel" == .git/* ]]; then
+    return 1
+  fi
+
   if grep -Fxq "./$rel" "$work_manifest"; then
-    return 0
+    if [ -e "/work/$rel" ] && [ -f "$run_dir/$rel" ] && [ -f "/work/$rel" ] && ! cmp -s "$run_dir/$rel" "/work/$rel"; then
+      return 0
+    fi
+    return 1
   fi
 
   if ! grep -Fxq "./$rel" "$install_manifest"; then
@@ -75,7 +92,9 @@ should_copy_back() {
 cd "$run_dir"
 
 status=0
-if ! ./smarts295bat "$@"; then
+if ./smarts295bat "$@"; then
+  status=0
+else
   status=$?
 fi
 
