@@ -96,9 +96,9 @@ If the first argument is:
 Examples:
 
 ```bash
-./docker_run.sh INPUT.DAT
-./docker_run.sh ./INPUT.DAT
-./docker_run.sh "$PWD/INPUT.DAT"
+./docker_run.sh input # smarts295bat will append .inp.txt
+./docker_run.sh ./inputfile
+./docker_run.sh "$PWD/INPUT"
 ```
 
 ## Notes
