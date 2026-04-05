@@ -2,9 +2,9 @@
 
 This repository builds a Docker image for the licensed Linux SMARTS 2.9.5 distribution and provides a small wrapper script you can use in place of `smarts295bat`.
 
-The repository does **not** download SMARTS for you during `docker build`.
+Provide the SMARTS Linux tarball, and the build script will stage it for the Docker image.
 
-You must obtain the SMARTS archive yourself from National Laboratory of the Rockies after registering and agreeing to their license terms:
+Obtain the SMARTS archive from National Laboratory of the Rockies after registering and agreeing to their license terms:
 
 - https://www.nlr.gov/grid/solar-resource/smarts
 
@@ -97,6 +97,6 @@ Examples:
 
 ## Notes
 
-- You must download SMARTS yourself after agreeing to the license terms on the SMARTS site.
-- The Docker build expects a local SMARTS tarball and will not fetch it from the network.
+- Download the SMARTS archive after agreeing to the license terms on the SMARTS site.
+- The Docker build uses a local SMARTS tarball that you provide.
 - `docker_run.sh` only remaps the first argument as a mounted file path, so the simplest workflow is to run it from the directory containing your SMARTS input file.
