@@ -12,35 +12,37 @@ if (($# > 1)); then
     exit 1
 fi
 
-SOURCE_TAR="${1:-}"
+if [[ ! -f "$VENDORED_TAR" ]]; then
+    SOURCE_TAR="${1:-}"
 
-if [[ -z "$SOURCE_TAR" ]]; then
-    if [[ -f "$PWD/smarts-295-linux-tar" ]]; then
-        SOURCE_TAR="$PWD/smarts-295-linux-tar"
-    elif [[ -f "$PWD/smarts-295-linux-tar.gz" ]]; then
-        SOURCE_TAR="$PWD/smarts-295-linux-tar.gz"
-    else
-        echo "error: could not find smarts-295-linux-tar or smarts-295-linux-tar.gz in $PWD" >&2
-        echo "download the SMARTS archive manually after accepting the license, then place it in the current working directory or pass its path as an argument" >&2
+    if [[ -z "$SOURCE_TAR" ]]; then
+        if [[ -f "$PWD/smarts-295-linux-tar" ]]; then
+            SOURCE_TAR="$PWD/smarts-295-linux-tar"
+        elif [[ -f "$PWD/smarts-295-linux-tar.gz" ]]; then
+            SOURCE_TAR="$PWD/smarts-295-linux-tar.gz"
+        else
+            echo "error: could not find smarts-295-linux-tar or smarts-295-linux-tar.gz in $PWD" >&2
+            echo "download the SMARTS archive manually after accepting the license, then place it in the current working directory or pass its path as an argument" >&2
+            exit 1
+        fi
+    fi
+
+    if [[ ! -f "$SOURCE_TAR" ]]; then
+        echo "error: file not found: $SOURCE_TAR" >&2
         exit 1
     fi
+
+    mkdir -p "$VENDOR_DIR"
+
+    case "$SOURCE_TAR" in
+        *.gz)
+            gzip -dc "$SOURCE_TAR" > "$VENDORED_TAR"
+            ;;
+        *)
+            cp "$SOURCE_TAR" "$VENDORED_TAR"
+            ;;
+    esac
 fi
-
-if [[ ! -f "$SOURCE_TAR" ]]; then
-    echo "error: file not found: $SOURCE_TAR" >&2
-    exit 1
-fi
-
-mkdir -p "$VENDOR_DIR"
-
-case "$SOURCE_TAR" in
-    *.gz)
-        gzip -dc "$SOURCE_TAR" > "$VENDORED_TAR"
-        ;;
-    *)
-        cp "$SOURCE_TAR" "$VENDORED_TAR"
-        ;;
-esac
 
 tar -tf "$VENDORED_TAR" >/dev/null
 
