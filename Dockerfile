@@ -37,6 +37,9 @@ RUN curl -fsSL "https://www.nrel.gov/media/docs/libraries/grid/smarts-295-linux-
     && rm -f /tmp/smarts-295-linux-tar.gz /tmp/smarts295.ldd
 
 
+COPY smarts-wrapper.sh /usr/local/bin/smarts-wrapper.sh
+RUN chmod +x /usr/local/bin/smarts-wrapper.sh
+
 WORKDIR /work
 
-ENTRYPOINT ["/opt/SMARTS_295_Linux/smarts295bat"]
+ENTRYPOINT ["/usr/local/bin/smarts-wrapper.sh"]
