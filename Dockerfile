@@ -27,14 +27,15 @@ RUN LIBG2C_DEB="$(curl -fsSL http://old-releases.ubuntu.com/ubuntu/pool/universe
     && ldconfig \
     && rm -rf /tmp/libg2c0_i386.deb /tmp/libg2c-extract
 
-RUN curl -fsSL "https://www.nrel.gov/media/docs/libraries/grid/smarts-295-linux-tar.gz" -o /tmp/smarts-295-linux-tar.gz \
-    && mkdir -p /opt \
-    && tar -xzf /tmp/smarts-295-linux-tar.gz -C /opt \
+COPY vendor/smarts-295-linux-tar /tmp/smarts-295-linux-tar
+
+RUN mkdir -p /opt \
+    && tar -xf /tmp/smarts-295-linux-tar -C /opt \
     && sed -i 's/\r$//' "$SMARTS_HOME/smarts295bat" \
     && chmod +x "$SMARTS_HOME/smarts295" "$SMARTS_HOME/smarts295bat" \
     && ldd "$SMARTS_HOME/smarts295" | tee /tmp/smarts295.ldd \
     && ! grep -q "not found" /tmp/smarts295.ldd \
-    && rm -f /tmp/smarts-295-linux-tar.gz /tmp/smarts295.ldd
+    && rm -f /tmp/smarts-295-linux-tar /tmp/smarts295.ldd
 
 
 COPY smarts-wrapper.sh /usr/local/bin/smarts-wrapper.sh
