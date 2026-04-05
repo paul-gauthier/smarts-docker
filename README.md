@@ -8,6 +8,12 @@ Obtain the SMARTS archive from National Laboratory of the Rockies after register
 
 - https://www.nlr.gov/grid/solar-resource/smarts
 
+## Why run SMARTS in Docker?
+
+SMARTS 2.9.5 is older Linux software, so getting it running directly on a modern machine can mean tracking down 32-bit compatibility libraries, `tcsh`, and other legacy runtime pieces. This image packages that environment once so you can run SMARTS without modifying your host system or debugging distribution-specific setup problems.
+
+Using Docker also makes the workflow more predictable across machines. The included wrapper script mounts your current working directory and passes arguments through to `smarts295bat`, so day-to-day use stays close to the native SMARTS command line.
+
 ## Get the SMARTS tarball
 
 Before building the image, download the Linux SMARTS archive from the SMARTS page above.
