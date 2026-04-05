@@ -21,6 +21,8 @@ else
   docker_args=(-i "${docker_args[@]}")
 fi
 
+#docker_args=(--entrypoint /bin/bash "${docker_args[@]}")
+
 container_args=("$@")
 if [ "${#container_args[@]}" -gt 0 ]; then
   if [[ "${container_args[0]}" == "$PWD"/* ]]; then
